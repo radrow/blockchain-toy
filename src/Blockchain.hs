@@ -8,7 +8,7 @@ import Types
 
 
 powCheck :: Block -> Bool
-powCheck = (==0) . (`mod` 2) . hash
+powCheck = (==0) . (`mod` 2000000) . hash
 
 
 insertBlock :: Block -> ServerState -> Maybe ServerState

@@ -20,7 +20,7 @@ serverActor :: IORef ServerState -> MBox ServerQuery -> IO ()
 serverActor state mb = receive mb $ \case
   ServerStop -> say "Bye!" >> kill self
   GiveMeState who -> do
-    say $ show who ++ " has asked for state. MBOX: " ++ show ((\(Actor _ m) -> show m) who)
+    say $ show who ++ " has asked for state"
     s <- readIORef state
     void $ who ! (ThisIsState s)
   ThrowAPaperBall -> say "Hey! Who did this?!"
