@@ -16,8 +16,8 @@ instance Hashable PublicKey
 type Hash = Int
 
 data Transaction = Transaction
-  { _source :: Maybe PublicKey
-  , _target :: PublicKey
+  { _source :: Maybe String
+  , _target :: String
   , _amount :: Integer
   } deriving (Eq, Show, Generic)
 
@@ -25,7 +25,7 @@ instance Hashable Transaction
 
 data BlockHeader = BlockHeader
   { _previousHash :: Hash
-  , _difficulty :: Int
+  -- , _difficulty :: Int
   , _nonce :: Int
   } deriving (Eq, Show, Generic)
 instance Hashable BlockHeader
@@ -37,7 +37,7 @@ data Block = Genesis | Block
 instance Hashable Block
 
 
-newtype Blockchain = Blockchain (NonEmpty Block)
+newtype Blockchain = Blockchain {blocks :: NonEmpty Block }
   deriving (Eq, Show)
 
 type TransactionPool = [Transaction]
@@ -51,12 +51,14 @@ data ClientQuery
   = ThisIsState ServerState
   | Rejected
   | Accepted
+  | ClientStop
 
 data ServerQuery
   = GiveMeState (Actor ClientQuery)
   | PushBlock (Actor ClientQuery) Block
   | PushTransaction (Actor ClientQuery) Transaction
   | ThrowAPaperBall
+  | ServerStop
 
 makeLenses ''BlockHeader
 makeLenses ''Block

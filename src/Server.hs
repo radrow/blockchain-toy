@@ -1,25 +1,36 @@
 module Server where
 
 import Data.IORef
-import Data.List.NonEmpty
+import qualified Data.List.NonEmpty as DLNE
 import Control.Concurrent.Actor
 import Control.Monad
+import Control.Lens
 
 import Types
+import Blockchain
 
 runServer :: IO (Actor ServerQuery)
 runServer = do
-  initState <- newIORef $ ServerState [] (Blockchain (Genesis :| []))
+  initState <- newIORef $ ServerState [] (Blockchain (Genesis DLNE.:| []))
+  say $ "Waiting for queries"
   spawn (serverActor initState)
 
 
 serverActor :: IORef ServerState -> MBox ServerQuery -> IO ()
 serverActor state mb = receive mb $ \case
-  GiveMeState who -> readIORef state >>= \s -> void $ who ! (ThisIsState s)
-  ThrowAPaperBall -> putStrLn "Hey! Who did this?!"
+  ServerStop -> say "Bye!" >> kill self
+  GiveMeState who -> do
+    say $ show who ++ " has asked for state. MBOX: " ++ show ((\(Actor _ m) -> show m) who)
+    s <- readIORef state
+    void $ who ! (ThisIsState s)
+  ThrowAPaperBall -> say "Hey! Who did this?!"
   PushBlock who block -> do
     s <- readIORef state
     case insertBlock block s of
       Nothing -> void $ who ! Rejected
-      Just newState -> who ! Accepted >> writeIORef newState s
-  PushTransaction who tr -> pushTransaction tr
+      Just newState -> do
+        who ! Accepted
+        writeIORef state newState
+        say $ "Added new block! transactions: " ++
+          show (_transactions . DLNE.head . blocks . _blockchain $ newState)
+  PushTransaction who tr -> readIORef state >>= writeIORef state . pushTransaction tr

@@ -2,6 +2,7 @@ module Blockchain where
 
 import qualified Data.List.NonEmpty as DLNE
 import Data.Hashable.Generic
+import Control.Lens
 
 import Types
 
@@ -27,3 +28,26 @@ insertBlock b s =
        , _transactionPool = filter (`notElem` trs) $ _transactionPool s
        }
   else Nothing
+
+
+pushTransaction :: Transaction -> ServerState -> ServerState
+pushTransaction = over transactionPool . (:)
+
+
+mineBlock :: ServerState -> Block
+mineBlock s =
+  let (Blockchain blocks) = _blockchain s
+      initBlock = Block
+        { _blockHeader = BlockHeader
+          { _previousHash = hash $ DLNE.head blocks
+          -- , difficulty = 0
+          , _nonce = 0
+          }
+        , _transactions = _transactionPool s
+        }
+
+      mine :: Block -> Block
+      mine b =
+        if powCheck b
+        then b else mine $ over (blockHeader . nonce) (+1) b
+  in mine initBlock
