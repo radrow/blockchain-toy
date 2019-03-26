@@ -31,6 +31,8 @@ dependencies:
 - mtl
 - transformers
 - hactors
+- bytestring
+- containers
 - stm
 - hashable-generics == 1.1.3
 - hashable
