@@ -41,5 +41,3 @@ You may manually add new transactions. To make radek pay michal 30 radcoins do:
 serv ! PushTransaction (makeTransaction radekkp michalpub 30)
 ```
 Note that you may need to `import Control.Concurrent.Actor` to use `!` operator.
-
-Sometimes mined blocks will get rejected because of the previous hash mismatch. 
