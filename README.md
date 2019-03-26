@@ -1,10 +1,12 @@
 # blockchain
 
+Simple client-server blockchain implementation in Haskell. Features transaction signaturing, block validation, proof-of-work, reward management and wallet control. Uses [hactors](http://hackage.haskell.org/package/hactors-0.0.3.1) library for concurrent programming, [RSA](http://hackage.haskell.org/package/RSA-2.3.1) for security and [hashable-generics](https://hackage.haskell.org/package/hashable-generics-1.1.3) for generic hashing functions.
+
 ## Setup
 
-First of all you will need to install `stack` tool. Do it using your favourite package manager.
+First of all you will need to install `stack` tool. You may do it using your favourite package manager or by running `curl -sSL https://get.haskellstack.org/ | sh` (bad habit tho).
 
-Then `cd` into project dir and run
+Next, `cd` into project dir and run
 ```
 stack build
 ```
@@ -17,12 +19,27 @@ stack ghci
 ```
 The REPL should appear.
 
-Create server actor (it is not yet distributed blockchain, sorry :( )
+Create two users (their private&public key pair):
+
+```
+radekkp <- newKeyPair
+(_, michalpub) <- newKeyPair
+```
+
+Create server actor (the blockchain is not distributed yet, sorry :( ):
 ```
 serv <- runServer
 ```
-Create client connected to the server:
+Create miner connected to the server that will use radek's key pair:
 ```
-cl <- runClient serv
+m <- runMiner radekkp serv
 ```
 ...and watch it mine! The server and the client will log some events. To kill the party you may just shut down the `ghci`, or send `ServerStop` and `ClientStop` to the actors accordingly.
+
+You may manually add new transactions. To make radek pay michal 30 radcoins do:
+```
+serv ! PushTransaction (makeTransaction radekkp michalpub 30)
+```
+Note that you may need to `import Control.Concurrent.Actor` to use `!` operator.
+
+Sometimes mined blocks will get rejected because of the previous hash mismatch. 
