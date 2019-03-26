@@ -1,6 +1,6 @@
 # blockchain
 
-Simple client-server blockchain implementation in Haskell. Features transaction signaturing, block validation, proof-of-work, reward management and wallet control. Uses [hactors](http://hackage.haskell.org/package/hactors-0.0.3.1) library for concurrent programming, [RSA](http://hackage.haskell.org/package/RSA-2.3.1) for security and [hashable-generics](https://hackage.haskell.org/package/hashable-generics-1.1.3) for generic hashing functions.
+Simple client-server blockchain implementation in Haskell. Features transaction signing, block validation, proof-of-work, reward management and wallet control. Uses [hactors](http://hackage.haskell.org/package/hactors-0.0.3.1) library for concurrent programming, [RSA](http://hackage.haskell.org/package/RSA-2.3.1) for security and [hashable-generics](https://hackage.haskell.org/package/hashable-generics-1.1.3) for generic hashing functions.
 
 ## Setup
 
